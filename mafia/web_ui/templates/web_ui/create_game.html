@@ -143,6 +143,7 @@
             <li>{{ player.name}}</li>
         {% endfor %}
     </ul>
+	{% if not game.started %}
     <form method="POST" action="{% url 'start_game' game.code %}">
         {% csrf_token %}
         <h3>Optional Roles</h3>
@@ -155,8 +156,12 @@
 
         <button type="submit">Start Game</button>
     </form>
+	{% endif %}
+	
+	{% if game.started %}
     <div id="role_display">
     </div>
-    <a class="reset-button" href="{% url 'reset' %}">Reset</a>
+    <a class="reset-button" href="{% url 'reset' game.code %}">Reset</a>
+	{% endif %}
 </body>
 </html>
