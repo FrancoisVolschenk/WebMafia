@@ -147,9 +147,14 @@
     <form method="POST" action="{% url 'start_game' game.code %}">
         {% csrf_token %}
         <h3>Optional Roles</h3>
-        <label><input type="checkbox" name="roles" value="Cop">Cop</label><br>
-        <label><input type="checkbox" name="roles" value="Doctor">Doctor</label><br>
-        <label><input type="checkbox" name="roles" value="Vigilante">Vigilante</label><br>
+		{% for role in roles %}
+			<div>
+				<label><input type="checkbox" name="roles" value="{{role.name}}">{{role.name}}</label><br>
+				<p>
+					{{role.description}}
+				</p>
+			</div>
+		{% endfor %}
 
         <h3>Number of Mafia</h3>
         <input type="number" name="num_mafia" min="1" max="150" value="1"><br><br>
