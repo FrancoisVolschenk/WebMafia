@@ -1,51 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Mafia Game</title>
-    <style>
-        /* Reset some basic elements for consistency across browsers */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% extends "web_ui/base.html" %}
+{% block content %}
 
-        /* Set a dark grey background and white text for the body */
-        body {
-            background-color: #2e2e2e;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            padding: 20px; /* Adding some padding for spacing */
-        }
-
-        /* Style the heading */
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        /* Style the links */
-        a {
-            display: block;
-            width: 200px;
-            margin: 10px auto; /* Center the links */
-            padding: 10px;
-            text-align: center;
-            text-decoration: none;
-            color: #ffffff;
-            background-color: #ff4c4c; /* Red accent color */
-            border-radius: 5px;
-        }
-
-        /* Hover effect for links */
-        a:hover {
-            background-color: #d42f2f; /* Darker red on hover */
-        }
-    </style>
-</head>
-<body>
     <h1>Welcome to Mafia Game</h1>
     <a href="{% url 'create_game' %}">Create Game</a>
     <a href="{% url 'join_game' %}">Join Game</a>
-</body>
-</html>
+{% endblock %}
