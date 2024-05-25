@@ -8,6 +8,8 @@ from .populate_roles import *
 def landing_page(request):
     if request.session.get("id", None) is not None:
         del request.session["id"]
+    if request.session.get("game_code", None) is not None:
+        del request.session["game_code"]
     return render(request, 'web_ui/landing.html')
 
 def verify_host(request) -> bool:
@@ -19,13 +21,18 @@ def verify_host(request) -> bool:
 
 def create_game(request, retry = False):
     if not retry:
-        game_code = generate_game_code()
-        game = Game.objects.create(code=game_code)
         try:
-            role = Role.objects.get(name = "Host")
-            Player.objects.create(name = f"Host {game_code}", game=game, is_host=True, role = role)
-            request.session["id"] = Player.objects.get(name = f"Host {game_code}").id
-            return render(request, 'web_ui/create_game.html', {"game": game})
+            if request.session.get("game_code", None) is None:
+                game_code = generate_game_code()
+                game = Game.objects.create(code=game_code)
+                role = Role.objects.get(name = "Host")
+                Player.objects.create(name = f"Host {game_code}", game=game, is_host=True, role = role)
+                request.session["id"] = Player.objects.get(name = f"Host {game_code}").id
+                request.session["game_code"] = game_code
+            else:
+                game_code = request.session["game_code"]
+                game = Game.objects.get(code=game_code)
+            return render(request, 'web_ui/create_game.html', {"game": game, "roles": get_optional_roles()})
         except:
             fill_missing_roles()
             return create_game(request, retry=True)
@@ -77,6 +84,7 @@ def start_game(request, game_code):
             return redirect("mafia-home")
         return render(request, 'web_ui/create_game.html', {"game": game})
     else:
+        print("not the host")
         return redirect("game_detail", game_code)
 
 def generate_game_code():
@@ -110,16 +118,14 @@ def distribute_roles(game, selected_roles, num_mafia):
         
 def reset(request, game_code):
     try:
-        print(f"Getting game {game_code} from DB")
         game = Game.objects.get(code=game_code)
-        print(f"Got game {game.code}. Checking host")
         if verify_host(request):
-            print("Host is ending game")
             for player in Player.objects.filter(game = game):
-                print(f"Deleting player {player.name}")
                 player.delete()
             game.ended = True
             game.save()
+            if request.session.get("game_code", None) is not None:
+                del request.session["game_code"]
             return redirect("mafia-home")
         else:
             return redirect("game_detail", game_code)
@@ -146,3 +152,8 @@ def get_role(request):
             del request.session["id"]
             return redirect("mafia-home")
     return JsonResponse({"role": "not assigned", "description": ""}) 
+
+def get_optional_roles():
+    roles = Role.objects.filter(optional = True)
+    role_data = [{"name": role.name, "description": role.description} for role in roles]
+    return role_data
