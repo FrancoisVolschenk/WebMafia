@@ -42,6 +42,7 @@ def create_game(request, retry = False):
 
 def join_game(request):
     msg = ""
+    games = get_open_games()
     if request.method == 'POST':
         try:
             game_code = request.POST.get('game_code')
@@ -60,7 +61,7 @@ def join_game(request):
                 msg = "Please ensure that your game token was entered correctly"
         except:
             msg = "Something went wrong. Please try again"
-    return render(request, 'web_ui/join_game.html', {"msg": msg})
+    return render(request, 'web_ui/join_game.html', {"msg": msg, "games": games})
 
 def game_detail(request, game_code):
     try:
@@ -157,3 +158,8 @@ def get_optional_roles():
     roles = Role.objects.filter(optional = True)
     role_data = [{"name": role.name, "description": role.description} for role in roles]
     return role_data
+
+def get_open_games():
+    games = Game.objects.filter(started = False, ended = False)
+    game_data = [{"code": game.code} for game in games]
+    return game_data

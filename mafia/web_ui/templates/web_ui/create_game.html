@@ -1,7 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Game</title>
+{% extends "web_ui/base.html" %}
+
+{% block content %}
 	<script>
 		function fetchPlayers() {
 			fetch("{% url 'get_players' game.code %}")
@@ -45,96 +44,6 @@
 		fetchPlayers();
 		//setInterval(fetchPlayers, 5000); // Fetch players every 5 seconds
 	</script>
-	<style>
-        /* Reset some basic elements for consistency across browsers */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* Set a dark grey background and white text for the body */
-        body {
-            background-color: #2e2e2e;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            padding: 20px; /* Adding some padding for spacing */
-        }
-
-        /* Style the heading */
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        /* Style the paragraph */
-        p {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        /* Style the list */
-        ul {
-            list-style-type: none;
-            padding: 0;
-            margin-bottom: 20px;
-        }
-
-        li {
-            margin-bottom: 5px;
-        }
-
-        /* Style the form */
-        form {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        /* Style the checkboxes */
-        input[type="checkbox"] {
-            margin-right: 5px;
-        }
-
-        /* Style the button */
-        button {
-            background-color: #ff4c4c; /* Red accent color */
-            color: #ffffff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #d42f2f; /* Darker red on hover */
-        }
-
-        /* Style the reset link */
-        a {
-            display: block;
-            text-align: center;
-            color: #ffffff;
-            text-decoration: none;
-        }
-		
-		/* Style the reset button */
-        a.reset-button {
-            display: inline-block;
-            padding: 20px 40px;
-            background-color: #ff4c4c; /* Red accent color */
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 18px;
-            border-radius: 10px;
-            transition: background-color 0.3s ease;
-        }
-
-        a.reset-button:hover {
-            background-color: #d42f2f; /* Darker red on hover */
-        }
-    </style>
-</head>
-<body>
     <h1>Game Created</h1>
     <p>Game Code: <strong>{{ game.code }}</strong></p>
     <h2>Players</h2>
@@ -168,5 +77,4 @@
     </div>
     <a class="reset-button" href="{% url 'reset' game.code %}">Reset</a>
 	{% endif %}
-</body>
-</html>
+{% endblock %}
