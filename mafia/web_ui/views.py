@@ -136,9 +136,9 @@ def reset(request, game_code):
 def get_players(request, game_code):
     try:
         game = Game.objects.get(code=game_code, ended=False)
-        players = game.player_set.all()
+        players = Player.objects.filter(game = game, is_host = False)
         player_data = [{"name": player.name, "role": player.role.name} for player in players]
-        return JsonResponse({"players": player_data, "started": game.started})
+        return JsonResponse({"players": player_data, "started": game.started, "count": len(players)})
     except:
         return JsonResponse({"msg": "Game code not recognised"})
 
