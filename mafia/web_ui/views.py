@@ -116,6 +116,15 @@ def distribute_roles(game, selected_roles, num_mafia):
             player_role = Role.objects.get(name = 'Villager')
             player.role = player_role
             player.save()
+
+def remove_player(request):
+    player_id = request.GET.get("player_id", -1)
+    try:
+        player = Players.objects.get(id = player_id)
+        player.delete()
+        return JsonResponse({"status": "success"})
+    except:
+        return JsonResponse({"status": "failed"})
         
 def reset(request, game_code):
     try:
@@ -137,7 +146,7 @@ def get_players(request, game_code):
     try:
         game = Game.objects.get(code=game_code, ended=False)
         players = Player.objects.filter(game = game, is_host = False)
-        player_data = [{"name": player.name, "role": player.role.name} for player in players]
+        player_data = [{"id": player.id, "name": player.name, "role": player.role.name} for player in players]
         return JsonResponse({"players": player_data, "started": game.started, "count": len(players)})
     except:
         return JsonResponse({"msg": "Game code not recognised"})
