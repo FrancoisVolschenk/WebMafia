@@ -35,12 +35,14 @@
 		
 		function removePlayer(playerID)
 		{
-			fetch("{% url 'remove_player' %}" + `?player_id=${playerID}`)
+			fetch("{% url 'remove_player' %}?"+ new URLSearchParams({
+													player_id: playerID,
+												}).toString())
 			.then(response => response.json())
 			.then(data => {
 				if(data.status == "success")
 				{
-					alert("Player has been removed from the game");
+					//alert("Player has been removed from the game");
 				}else
 				{
 					alert("Player could not be removed");
