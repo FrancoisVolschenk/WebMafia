@@ -65,6 +65,8 @@ def join_game(request):
 
 def game_detail(request, game_code):
     try:
+        if request.session.get("id", -1) == -2:
+            raise Exception
         game = Game.objects.get(code=game_code, ended=False)
         players = game.player_set.all()
         return render(request, 'web_ui/game_detail.html', {'game': game, 'players': players})
@@ -116,6 +118,20 @@ def distribute_roles(game, selected_roles, num_mafia):
             player_role = Role.objects.get(name = 'Villager')
             player.role = player_role
             player.save()
+
+def remove_player(request):
+    player_id = request.GET.get("player_id", int(request.session.get("id", -1)))
+    try:
+        player = Player.objects.get(id = player_id)
+        player.delete()
+        if player_id == request.session.get("id", -10):
+            if request.session.get("id", None) is not None:
+                request.session["id"] = -2
+            if request.session.get("game_code", None) is not None:
+                del request.session["game_code"]
+        return JsonResponse({"status": "success"})
+    except:
+        return JsonResponse({"status": "failed"})
         
 def reset(request, game_code):
     try:
@@ -135,10 +151,18 @@ def reset(request, game_code):
     
 def get_players(request, game_code):
     try:
+        requestor = request.session.get("id", -2)
         game = Game.objects.get(code=game_code, ended=False)
         players = Player.objects.filter(game = game, is_host = False)
-        player_data = [{"name": player.name, "role": player.role.name} for player in players]
-        return JsonResponse({"players": player_data, "started": game.started, "count": len(players)})
+        player_data = []
+        still_in = verify_host(request)
+        for player in players:
+            player_data.append({"id": player.id, "name": player.name, "role": player.role.name})
+            if player.id == requestor:
+                still_in = True
+        if not still_in:
+            request.session["id"] = -2
+        return JsonResponse({"players": player_data, "started": game.started, "count": len(players), "participating": still_in})
     except:
         return JsonResponse({"msg": "Game code not recognised"})
 

@@ -7,12 +7,12 @@
 			.then(response => response.json())
 			.then(data => {
 				document.getElementById("player_count").innerHTML = "(" + data.count + ")";
-				let playersList = document.getElementById("players-list");
-				playersList.innerHTML = "";
+				let playerTable = document.getElementById("players-table");
+				playerTable.innerHTML = "<thead><tr><th>Player Name</th><th>Action</th></tr></thead><tbody></tbody>";
 				data.players.forEach(player => {
-					let li = document.createElement("li");
-					li.textContent = player.name + " → " + player.role;
-					playersList.appendChild(li);
+					let new_name = playerTable.insertRow(-1);
+					new_name.insertCell(0).innerHTML = player.name;
+					new_name.insertCell(1).innerHTML = "<button onclick='removePlayer(" + player.id + ")'>Remove</button>";
 				});
 				if(data.started)
 				{
@@ -20,15 +20,32 @@
 					fetch("{% url 'get_players' game.code %}")
 			.then(response => response.json())
 			.then(data => {
-				let playersList = document.getElementById("players-list");
-				playersList.innerHTML = "";
+				let playerTable = document.getElementById("players-table");
+				playerTable.innerHTML = "<thead><tr><th>Player Name</th><th>Role</th></tr></thead><tbody></tbody>";
 				data.players.forEach(player => {
-					let li = document.createElement("li");
-					li.textContent = player.name + " → " + player.role;
-					playersList.appendChild(li);
+					let new_name = playerTable.insertRow(-1);
+					new_name.insertCell(0).innerHTML = player.name;
+					new_name.insertCell(1).innerHTML = player.role;
 				});});
 				}else{
 					setTimeout(fetchPlayers, 5000);
+				}
+			});
+		}
+		
+		function removePlayer(playerID)
+		{
+			fetch("{% url 'remove_player' %}?"+ new URLSearchParams({
+													player_id: playerID,
+												}).toString())
+			.then(response => response.json())
+			.then(data => {
+				if(data.status == "success")
+				{
+					//alert("Player has been removed from the game");
+				}else
+				{
+					alert("Player could not be removed");
 				}
 			});
 		}
@@ -48,11 +65,22 @@
     <h1>Game Created</h1>
     <p>Game Code: <strong>{{ game.code }}</strong></p>
     <h2>Players</h2> <span id="player_count"></span>
-    <ul id="players-list">
-        {% for player in players %}
-            <li>{{ player.name}}</li>
-        {% endfor %}
-    </ul>
+	<table id="players-table">
+		<thead>
+			<tr>
+				<th>Player Name</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for player in players %}
+				<tr>
+					<td>{{ player.name }}</td>
+					<td><button onclick="removePlayer('{{ player.id }}')">Remove</button></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 	{% if not game.started %}
     <form method="POST" action="{% url 'start_game' game.code %}">
         {% csrf_token %}
