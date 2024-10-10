@@ -1,7 +1,9 @@
 {% extends "web_ui/base.html" %}
+{% load static %}
 {% block content %}
 
     <h1>Welcome to Mafia Game</h1>
     <a href="{% url 'create_game' %}">Create Game</a>
     <a href="{% url 'join_game' %}">Join Game</a>
+	<h1><img src="{% static 'web_ui/assets/img/qr.png' %}" width="10%"></h1>
 {% endblock %}
