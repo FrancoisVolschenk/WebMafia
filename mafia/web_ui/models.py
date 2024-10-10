@@ -6,11 +6,17 @@ class Game(models.Model):
     started = models.BooleanField(default=False)
     ended = models.BooleanField(default=False)
 
+    def __str__(self) -> str:
+        return ("{}: Started({}), Ended({})".format(self.code, self.started, self.ended))
+
 class Role(models.Model):
     name = models.CharField(max_length=20)
     description = models.TextField()
     playable = models.BooleanField(default=True)
     optional = models.BooleanField(default=True)
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Player(models.Model):
@@ -20,3 +26,6 @@ class Player(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     is_host = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return (self.name)
